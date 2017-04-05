@@ -10,13 +10,15 @@ public class QuickHull {
 	private ArrayList<Point> output;
 	
 	public QuickHull( ArrayList<Point> S ){
-		///creates a QuickHull object from the given ArrayList of points
+		//creates a QuickHull object from the given ArrayList of points
 		input = S;
 		output = new ArrayList<Point>();
 		n = S.size();
 		System.out.println( this.input );
 	}
 	
+	// performs the max/min calculation
+	// to be used later in recursion
 	public Point[] getExtremes( ArrayList<Point> a ) {
 		Point[] output = new Point[2];
 		Point min = a.get(0);
@@ -41,12 +43,19 @@ public class QuickHull {
 		Point min = result[0];
 		Point max = result[1];
 
-		System.out.println( "min: " + String.valueOf(min) + "	" + 
-							"max: " + String.valueOf(max) );
+		//System.out.println( "min: " + String.valueOf(min) + "	" + 
+							//"max: " + String.valueOf(max) );
 		
 		Segment s = new Segment( min,max );
+		
+		// extremes in x will be a part of the convex hull
 		output.add( min );
 		output.add( max );
+		
+		// get all of the points on the outward portion of the line
+		
+		// perform the recursive algorithm on the two points
+
 		return output;
 	}
 	
