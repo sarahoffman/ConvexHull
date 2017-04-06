@@ -18,7 +18,6 @@ public class QuickHull {
     }
 	
     // performs the max/min calculation
-    // to be used later in recursion
     public Point[] getExtremes( ArrayList<Point> a ) {
 	Point[] output = new Point[2];
 	Point min = a.get(0);
@@ -53,12 +52,14 @@ public class QuickHull {
 	// extremes in x will be a part of the convex hull
 	this.output.add( min );
 	this.output.add( max );
+	this.input.remove(min);
+	this.input.remove(max); 
 
 	ArrayList<Point> left = new ArrayList<Point>();
 	ArrayList<Point> right = new ArrayList<Point>(); 
 
 	// get a list of all of the points to the left of the line
-	for(int i = 0; i< this.n; i++){
+	for(int i = 0; i< this.input.size(); i++){
 	    Point p = this.input.get(i);
 	    if (s.isLeft(p) == true){
 		left.add(p);
@@ -77,9 +78,9 @@ public class QuickHull {
 
     // write the recursive algorithm.
     public void subHull(ArrayList<Point> a, Segment s ) {
-
+	System.out.println("Recursing with size" + a.size()); 
 	// base case for recursion
-	if (a.size() == 1){
+	if (a.size() == 2){
 	    return; 
 	}
 	
@@ -107,7 +108,7 @@ public class QuickHull {
 	ArrayList<Point> left = new ArrayList<Point>();
 
 	// get a list of all of the points to the left of the line
-	for(int i = 0; i< this.n; i++){
+	for(int i = 0; i< a.size(); i++){
 	    Point p = this.input.get(i);
 	    if (s.isLeft(p) == true){
 		left.add(p);
