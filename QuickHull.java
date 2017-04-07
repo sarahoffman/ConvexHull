@@ -33,6 +33,9 @@ public class QuickHull {
 		}
 		output[0] = min;
 		output[1] = max;
+		System.out.println( "min: " + String.valueOf(min) + "	" + 
+			"max: " + String.valueOf(max) );
+
 		return output;
     }
 	
@@ -81,7 +84,7 @@ public class QuickHull {
     public void subHull(ArrayList<Point> a, Segment s ) {
 		System.out.println("Recursing with size" + a.size()); 
 		// base case for recursion
-		if (a.size() <= 2){
+		if (a.size() < 2){
 			return; 
 		}
 	
@@ -98,8 +101,12 @@ public class QuickHull {
 			}
 		}
 
+		System.out.println( "max: " + String.valueOf(maxPoint) );
+
 		// add the max point to the convex hull
-		this.output.add(maxPoint); 
+		if (!this.output.contains(maxPoint)) {
+			this.output.add(maxPoint);
+		}
 
 		//create a segment between the maxPoint and the endpoints of the given segment
 		Segment min2dist = new Segment(s.getP1(), maxPoint);
@@ -131,11 +138,24 @@ public class QuickHull {
     public static void main( String args[] ) {
 		ArrayList<Point> S = new ArrayList<Point>();
 		Random rand = new Random();
-		for( int i = 0; i < 1; i++) {
-			int x = rand.nextInt(100);
-			int y = rand.nextInt(100);
-			S.add( new Point( x, y ) );
-		}
+		// S.add(new Point(0, 0));
+		// S.add(new Point(1, 1));
+		// S.add(new Point(2, 2));
+		// S.add(new Point(0, 4));
+		// S.add(new Point(4, 0));
+		// S.add(new Point(4, 4));
+
+		S.add(new Point(12, 32));
+		S.add(new Point(45, 98));
+		S.add(new Point(65, 12));
+		S.add(new Point(10, 30));
+
+
+		// for( int i = 0; i < 10; i++) {
+		// 	int x = rand.nextInt(100);
+		// 	int y = rand.nextInt(100);
+		// 	S.add( new Point( x, y ) );
+		// }
 		
 		QuickHull QH = new QuickHull( S );
 		System.out.println( "Convex hull: " + QH.getConvexHull() );

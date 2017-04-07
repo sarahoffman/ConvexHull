@@ -56,7 +56,9 @@ public class Segment {
     
     // function to calculate if a point is to the left of a line segment
 	public Boolean isLeft(Point p) {
-		if (p.getY() >= this.slope*p.getX() + this.intercept) {
+		if (((this.p2.getX() - this.p1.getX())*(p.getY()-
+			this.p1.getY()))-((p.getX()-this.p1.getX())*(this.p2.getY()-this.p1.getY())) > 0) {
+		// if (p.getY() >= this.slope*p.getX() + this.intercept) {
 		    return true; 
 		}
 		else {
