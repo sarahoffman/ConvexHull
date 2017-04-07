@@ -82,11 +82,13 @@ public class QuickHull {
 
     // write the recursive algorithm.
     public void subHull(ArrayList<Point> a, Segment s ) {
-		System.out.println("Recursing with size" + a.size()); 
 		// base case for recursion
-		if (a.size() < 2){
+		if (a.size() < 1){
 			return; 
 		}
+		// System.out.println("Recursing with size: " + a.size()); 
+		// System.out.println( "Contents of a: " + a );
+		// System.out.println("Input size: " + this.input.size()); 
 	
 		//loop through the arrayList to find the point with the max distance
 		double max = Double.MIN_VALUE;
@@ -107,26 +109,28 @@ public class QuickHull {
 		if (!this.output.contains(maxPoint)) {
 			this.output.add(maxPoint);
 		}
+		a.remove(maxPoint);
 
 		//create a segment between the maxPoint and the endpoints of the given segment
 		Segment min2dist = new Segment(s.getP1(), maxPoint);
 		Segment max2dist = new Segment(s.getP2(), maxPoint);
 
-
 		ArrayList<Point> left = new ArrayList<Point>();
+		ArrayList<Point> right = new ArrayList<Point>();
 
 		// get a list of all of the points to the left of the line
 		for(int i = 0; i< a.size(); i++){
-			Point p = this.input.get(i);
-			if (s.isLeft(p) == true){
+			Point p = a.get(i);
+			if (min2dist.isLeft(p) == true){
 				left.add(p);
+			} else if (max2dist.isLeft(p) == false) {
+				right.add(p);
 			}
-	   
 		}
 
 		// call algorithm recursively
 		subHull(left, min2dist);
-		subHull(left, max2dist); 
+		subHull(right, max2dist); 
     }
 	
     public double distance( Segment s, Point p ) {
@@ -138,17 +142,24 @@ public class QuickHull {
     public static void main( String args[] ) {
 		ArrayList<Point> S = new ArrayList<Point>();
 		Random rand = new Random();
-		// S.add(new Point(0, 0));
+		S.add(new Point(0, 0));
 		// S.add(new Point(1, 1));
 		// S.add(new Point(2, 2));
 		// S.add(new Point(0, 4));
 		// S.add(new Point(4, 0));
 		// S.add(new Point(4, 4));
 
-		S.add(new Point(12, 32));
-		S.add(new Point(45, 98));
-		S.add(new Point(65, 12));
-		S.add(new Point(10, 30));
+		// S.add(new Point(12, 32));
+		// S.add(new Point(45, 98));
+		// S.add(new Point(65, 12));
+		// S.add(new Point(10, 30));
+		// S.add(new Point(0, 80));
+		// S.add(new Point(2, -20));
+		// S.add(new Point(3, -30));
+		// S.add(new Point(0, 0));
+		// S.add(new Point(7, -45));
+		// S.add(new Point(0, 0));
+		// S.add(new Point(7, -10));
 
 
 		// for( int i = 0; i < 10; i++) {
