@@ -142,24 +142,24 @@ public class QuickHull {
     public static void main( String args[] ) {
 		ArrayList<Point> S = new ArrayList<Point>();
 		Random rand = new Random();
-		S.add(new Point(0, 0));
+		//S.add(new Point(0, 0));
 		// S.add(new Point(1, 1));
 		// S.add(new Point(2, 2));
 		// S.add(new Point(0, 4));
 		// S.add(new Point(4, 0));
 		// S.add(new Point(4, 4));
 
-		// S.add(new Point(12, 32));
-		// S.add(new Point(45, 98));
-		// S.add(new Point(65, 12));
-		// S.add(new Point(10, 30));
-		// S.add(new Point(0, 80));
-		// S.add(new Point(2, -20));
-		// S.add(new Point(3, -30));
-		// S.add(new Point(0, 0));
-		// S.add(new Point(7, -45));
-		// S.add(new Point(0, 0));
-		// S.add(new Point(7, -10));
+		S.add(new Point(12, 32));
+		S.add(new Point(45, 98));
+		S.add(new Point(65, 12));
+		S.add(new Point(10, 30));
+		S.add(new Point(0, 80));
+		S.add(new Point(2, -20));
+		S.add(new Point(3, -30));
+		S.add(new Point(0, 0));
+		S.add(new Point(7, -45));
+		S.add(new Point(0, 0));
+		S.add(new Point(7, -10));
 
 
 		// for( int i = 0; i < 10; i++) {
