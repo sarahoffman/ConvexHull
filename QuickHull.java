@@ -87,7 +87,7 @@ public class QuickHull {
 			return; 
 		}
 		// System.out.println("Recursing with size: " + a.size()); 
-		// System.out.println( "Contents of a: " + a );
+		System.out.println( "Contents of a: " + a );
 		// System.out.println("Input size: " + this.input.size()); 
 	
 		//loop through the arrayList to find the point with the max distance
@@ -119,13 +119,36 @@ public class QuickHull {
 		ArrayList<Point> right = new ArrayList<Point>();
 
 		// get a list of all of the points to the left of the line
-		for(int i = 0; i< a.size(); i++){
-			Point p = a.get(i);
-			if (min2dist.isLeft(p) == true){
-				left.add(p);
-			} else if (max2dist.isLeft(p) == false) {
-				right.add(p);
+		// we need to handle the case of the max point being negative 
+		// and the max point being positive differently
+		// this is due to our isLeft method
+		
+		// is maxPoint is negative
+		if (0 >= maxPoint.getY()){
+			for(int i = 0; i< a.size(); i++){
+				Point p = a.get(i);
+				if (max2dist.isLeft(p) == true){
+					left.add(p);
+				} 
+				else if (min2dist.isLeft(p) == false) {
+					right.add(p);
+				}
 			}
+		}
+		
+		// if the maxPoint is positive
+		else{
+		
+			for(int i = 0; i< a.size(); i++){
+				Point p = a.get(i);
+				if (min2dist.isLeft(p) == true){
+					left.add(p);
+				} 
+				else if (max2dist.isLeft(p) == false) {
+					right.add(p);
+				}
+			}
+		
 		}
 
 		// call algorithm recursively
@@ -142,13 +165,14 @@ public class QuickHull {
     public static void main( String args[] ) {
 		ArrayList<Point> S = new ArrayList<Point>();
 		Random rand = new Random();
-		//S.add(new Point(0, 0));
+		// S.add(new Point(0, 0));
 		// S.add(new Point(1, 1));
 		// S.add(new Point(2, 2));
 		// S.add(new Point(0, 4));
 		// S.add(new Point(4, 0));
 		// S.add(new Point(4, 4));
 
+		/*
 		S.add(new Point(12, 32));
 		S.add(new Point(45, 98));
 		S.add(new Point(65, 12));
@@ -160,13 +184,16 @@ public class QuickHull {
 		S.add(new Point(7, -45));
 		S.add(new Point(0, 0));
 		S.add(new Point(7, -10));
-
-
-		// for( int i = 0; i < 10; i++) {
-		// 	int x = rand.nextInt(100);
-		// 	int y = rand.nextInt(100);
-		// 	S.add( new Point( x, y ) );
-		// }
+		*/
+		
+		
+		for( int i = 0; i < 10; i++) {
+	        int x = rand.nextInt(100);
+			int y = rand.nextInt(100)-50;
+	        	S.add( new Point( x, y ) );
+		}
+		
+		
 		
 		QuickHull QH = new QuickHull( S );
 		System.out.println( "Convex hull: " + QH.getConvexHull() );
