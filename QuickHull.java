@@ -167,8 +167,11 @@ public class QuickHull {
 		// 	int y = rand.nextInt(100);
 		// 	S.add( new Point( x, y ) );
 		// }
-		
+		long startTime = System.nanoTime();
 		QuickHull QH = new QuickHull( S );
+	    	long endTime = System.nanoTime();
 		System.out.println( "Convex hull: " + QH.getConvexHull() );
+	    	// duration time in milliseconds
+	    	long duration = (endTime - startTime)/1000000;
     }
 }
