@@ -1,14 +1,23 @@
+// Sara Hoffman, Hannah Bossi, and Riley Karp
+// CS375 - Algorithms
+// 04-10-17
+
+
+// import statements
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.Random;
 import java.lang.Math;
 
+// class for QuickHull algorithm
 public class QuickHull {
 
+	// variable declarations
     private ArrayList<Point> input;
-    private int n;
     private ArrayList<Point> output;
+    private int n;
 	
+	// constructor
     public QuickHull( ArrayList<Point> S ){
 		//creates a QuickHull object from the given ArrayList of points
 		input = S;
@@ -156,6 +165,7 @@ public class QuickHull {
 		subHull(right, max2dist); 
     }
 	
+	// find the perpendicular distance of a point from the segment
     public double distance( Segment s, Point p ) {
 		double[] a = s.getCo();
 		double dist = Math.abs( a[0]*p.getX() + a[1]*p.getY() + a[2] )/Math.sqrt( a[0]*a[0] + a[1]*a[1] );
@@ -187,14 +197,14 @@ public class QuickHull {
 		*/
 		
 		
+		// create random set of 10 points
 		for( int i = 0; i < 10; i++) {
 	        int x = rand.nextInt(100);
 			int y = rand.nextInt(100)-50;
 	        	S.add( new Point( x, y ) );
 		}
 		
-		
-		
+		// create QuickHull object and find convex hull
 		QuickHull QH = new QuickHull( S );
 		System.out.println( "Convex hull: " + QH.getConvexHull() );
     }

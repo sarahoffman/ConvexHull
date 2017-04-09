@@ -158,14 +158,32 @@ public class QuickHullThread extends Thread {
 		ArrayList<Point> left = new ArrayList<Point>();
 		ArrayList<Point> right = new ArrayList<Point>();
 
-		// get a list of all of the points to the left of the line
-		for(int i = 0; i< a.size(); i++) {
-			Point p = a.get(i);
-			if (min2dist.isLeft(p) == true) {
-				left.add(p);
-			} else if (max2dist.isLeft(p) == false) {
-				right.add(p);
+		// is maxPoint is negative
+		if (0 >= maxPoint.getY()){
+			for(int i = 0; i< a.size(); i++){
+				Point p = a.get(i);
+				if (max2dist.isLeft(p) == true){
+					left.add(p);
+				} 
+				else if (min2dist.isLeft(p) == false) {
+					right.add(p);
+				}
 			}
+		}
+		
+		// if the maxPoint is positive
+		else{
+		
+			for(int i = 0; i< a.size(); i++){
+				Point p = a.get(i);
+				if (min2dist.isLeft(p) == true){
+					left.add(p);
+				} 
+				else if (max2dist.isLeft(p) == false) {
+					right.add(p);
+				}
+			}
+		
 		}
 
 		System.out.println("Thread size: " + this.threads.size());
