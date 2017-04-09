@@ -3,6 +3,7 @@ import java.awt.Point;
 import java.util.Random;
 import java.lang.Math;
 import java.util.stream.Stream;
+import java.util.stream.Collectors; 
 import java.lang.Double; 
 
 public class StreamHull {
@@ -16,7 +17,7 @@ public class StreamHull {
 		input = S;
 		output = new ArrayList<StreamPoint>();
 		n = S.size();
-		System.out.println( "input: " + this.input );
+		//System.out.println( "input: " + this.input );
     }
 
  
@@ -24,8 +25,8 @@ public class StreamHull {
     // performs the max/min calculation
     public StreamPoint[] getExtremes( ArrayList<StreamPoint> a ) {
 		StreamPoint[] output = new StreamPoint[2];
-		StreamPoint max = a.stream().max((p1,p2)->p1.compare(p1,p2)).get();
-		StreamPoint min = a.stream().min((p1,p2)->p1.compare(p1,p2)).get(); 
+		StreamPoint max = a.stream().parallel().max((p1,p2)->p1.compare(p1,p2)).get();
+		StreamPoint min = a.stream().parallel().min((p1,p2)->p1.compare(p1,p2)).get(); 
 		
 		output[0] = min;
 		output[1] = max;
@@ -43,8 +44,8 @@ public class StreamHull {
 			StreamPoint min = result[0];
 			StreamPoint max = result[1];
 
-// 			System.out.println( "min: " + String.valueOf(min) + "	" + 
-// 			"max: " + String.valueOf(max) );
+			//System.out.println( "min: " + String.valueOf(min) + "	" + 
+ 			//"max: " + String.valueOf(max) );
 		
 			Segment s = new Segment( min,max );
 		
@@ -52,26 +53,22 @@ public class StreamHull {
 			this.output.add( min );
 			this.input.remove(min);
 			if( min != max ) {
-				this.output.add( max );
-				this.input.remove(max);
+			    this.output.add( max );
+			    this.input.remove(max);
 			} 
 
-			ArrayList<StreamPoint> left = new ArrayList<StreamPoint>();
-			ArrayList<StreamPoint> right = new ArrayList<StreamPoint>(); 
+			// use streams to get all points to the left of the line
+			ArrayList<StreamPoint> streamleft = this.input.stream().parallel()
+			    .filter(p -> s.isLeft(p)).collect(Collectors.toCollection(ArrayList::new));
+			ArrayList<StreamPoint> streamright = this.input.stream().parallel()
+			    .filter(p -> !s.isLeft(p)).collect(Collectors.toCollection(ArrayList::new));
+		       
 
-			// get a list of all of the points to the left of the line
-			for(int i = 0; i< this.input.size(); i++){
-				StreamPoint p = this.input.get(i);
-				if (s.isLeft(p) == true){
-					left.add(p);
-				}
-				else{
-					right.add(p); 
-				}
-			}	
+
+			//System.out.println( "Contents of streamright: " + streamright );
 			// perform the recursive algorithm on the two points
-			this.subHull(left,s);
-			this.subHull(right,s); 
+			this.subHull(streamleft,s);
+			this.subHull(streamright,s); 
 		}
 		return this.output;
     }
@@ -86,24 +83,16 @@ public class StreamHull {
 		//System.out.println( "Contents of a: " + a );
 		// System.out.println("Input size: " + this.input.size()); 
 	
-		//loop through the arrayList to find the point with the max distance
-		double max = Double.MIN_VALUE;
-		StreamPoint maxPoint = a.get(0);
-	
 		//find the point with the max perpendicular distance
-		for(int i = 0; i< a.size(); i++){
-			double dist = this.distance(s, a.get(i));
-			if(dist>max){
-				max = dist; 
-				maxPoint = a.get(i); 
-			}
-		}
-
-		System.out.println( "max: " + String.valueOf(maxPoint) );
+		StreamPoint maxPoint = a.stream().parallel()
+		    .max((p1,p2)->java.lang.Double.compare(this.distance(s,p1),this.distance(s,p2))).get();
+		
+	
+		//System.out.println( "max: " + String.valueOf(maxPoint) );
 
 		// add the max point to the convex hull
 		if (!this.output.contains(maxPoint)) {
-			this.output.add(maxPoint);
+		    this.output.add(maxPoint);
 		}
 		a.remove(maxPoint);
 
@@ -111,22 +100,45 @@ public class StreamHull {
 		Segment min2dist = new Segment(s.getP1(), maxPoint);
 		Segment max2dist = new Segment(s.getP2(), maxPoint);
 
-		ArrayList<StreamPoint> left = new ArrayList<StreamPoint>();
-		ArrayList<StreamPoint> right = new ArrayList<StreamPoint>();
+		ArrayList<StreamPoint> left  = new ArrayList<StreamPoint>();
+		ArrayList<StreamPoint> right = new ArrayList<StreamPoint>(); 
 
-		// get a list of all of the points to the left of the line
-		for(int i = 0; i< a.size(); i++){
+		// is maxPoint is on the bottom half of the line
+		if (s.getP1().getY()>= maxPoint.getY() || s.getP2().getY() >= maxPoint.getY()){
+		    
+			
+		    for(int i = 0; i< a.size(); i++){
+			StreamPoint p = a.get(i);
+			if (max2dist.isLeft(p) == true){
+			    left.add(p);
+			} 
+			else if (min2dist.isLeft(p) == false) {
+			    right.add(p);
+			}
+		    }
+		    
+		}
+		
+		// if the maxPoint is on the top half of the line
+		else{
+	      
+		    for(int i = 0; i< a.size(); i++){
 			StreamPoint p = a.get(i);
 			if (min2dist.isLeft(p) == true){
-				left.add(p);
-			} else if (max2dist.isLeft(p) == false) {
-				right.add(p);
+			    left.add(p);
+			} 
+			else if (max2dist.isLeft(p) == false) {
+			    right.add(p);
 			}
+		    }
+		
 		}
 
+		
 		// call algorithm recursively
 		subHull(left, min2dist);
 		subHull(right, max2dist); 
+		
     }
 	
     public double distance( Segment s, StreamPoint p ) {
@@ -141,7 +153,7 @@ public class StreamHull {
 
 
 
-		// Stream Hull is working provided that 
+		// Stream Hull is working provided that
 		/*
 		S.add(new StreamPoint(0, 0));
 		S.add(new StreamPoint(1, 1));
@@ -150,7 +162,6 @@ public class StreamHull {
 		S.add(new StreamPoint(4, 0));
 		S.add(new StreamPoint(4, 4));
 		*/
-
 		/*
 		S.add(new StreamPoint(12, 32));
 		S.add(new StreamPoint(45, 98));
@@ -165,17 +176,20 @@ public class StreamHull {
 		S.add(new StreamPoint(7, -10));
 		*/
 
-		// for( int i = 0; i < 10; i++) {
-		// 	int x = rand.nextInt(100);
-		// 	int y = rand.nextInt(100);
-		// 	S.add( new Point( x, y ) );
-		// }
-		long startTime = System.nanoTime();
+		for( int i = 0; i < 900000; i++) {
+		 	int x = rand.nextInt(100);
+		 	int y = rand.nextInt(100);
+		 	S.add( new StreamPoint( x, y ) );
+		 }
+	
 		StreamHull SH = new StreamHull( S );
+		long startTime = System.nanoTime();
+		ArrayList<StreamPoint> output = SH.getConvexHull(); 
 	    	long endTime = System.nanoTime();
-		System.out.println( "Convex hull: " + SH.getConvexHull() );
+		//System.out.println( "Convex hull: " + output );
 	    	// duration time in milliseconds
 	    	long duration = (endTime - startTime)/1000000;
+		System.out.println("Duration: " + duration); 
     }
 }
 
