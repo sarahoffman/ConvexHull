@@ -14,7 +14,7 @@ public class QuickHull {
 
 	// variable declarations
     private ArrayList<Point> input;
-    private ArrayList<Point> output;
+    protected ArrayList<Point> output;
     private int n;
 	
 	// constructor
@@ -23,7 +23,7 @@ public class QuickHull {
 		input = S;
 		output = new ArrayList<Point>();
 		n = S.size();
-		System.out.println( "input: " + this.input );
+		//System.out.println( "input: " + this.input );
     }
 	
     // performs the max/min calculation
@@ -42,8 +42,8 @@ public class QuickHull {
 		}
 		output[0] = min;
 		output[1] = max;
-		System.out.println( "min: " + String.valueOf(min) + "	" + 
-			"max: " + String.valueOf(max) );
+		// System.out.println( "min: " + String.valueOf(min) + "	" + 
+		// 	"max: " + String.valueOf(max) );
 
 		return output;
     }
@@ -56,8 +56,8 @@ public class QuickHull {
 			Point min = result[0];
 			Point max = result[1];
 
-// 			System.out.println( "min: " + String.valueOf(min) + "	" + 
-// 			"max: " + String.valueOf(max) );
+			// System.out.println( "min: " + String.valueOf(min) + "	" + 
+			// "max: " + String.valueOf(max) );
 		
 			Segment s = new Segment( min,max );
 		
@@ -95,9 +95,6 @@ public class QuickHull {
 		if (a.size() < 1){
 			return; 
 		}
-		// System.out.println("Recursing with size: " + a.size()); 
-		System.out.println( "Contents of a: " + a );
-		// System.out.println("Input size: " + this.input.size()); 
 	
 		//loop through the arrayList to find the point with the max distance
 		double max = Double.MIN_VALUE;
@@ -112,7 +109,7 @@ public class QuickHull {
 			}
 		}
 
-		System.out.println( "max: " + String.valueOf(maxPoint) );
+		//System.out.println( "max: " + String.valueOf(maxPoint) );
 
 		// add the max point to the convex hull
 		if (!this.output.contains(maxPoint)) {
@@ -126,14 +123,9 @@ public class QuickHull {
 
 		ArrayList<Point> left = new ArrayList<Point>();
 		ArrayList<Point> right = new ArrayList<Point>();
-
-		// get a list of all of the points to the left of the line
-		// we need to handle the case of the max point being negative 
-		// and the max point being positive differently
-		// this is due to our isLeft method
 		
 		// is maxPoint is negative
-		if (0 >= maxPoint.getY()){
+		if (s.getP1().getY() >= maxPoint.getY() || s.getP2().getY() >= maxPoint.getY()) {
 			for(int i = 0; i< a.size(); i++){
 				Point p = a.get(i);
 				if (max2dist.isLeft(p) == true){
@@ -175,37 +167,22 @@ public class QuickHull {
     public static void main( String args[] ) {
 		ArrayList<Point> S = new ArrayList<Point>();
 		Random rand = new Random();
-		// S.add(new Point(0, 0));
-		// S.add(new Point(1, 1));
-		// S.add(new Point(2, 2));
-		// S.add(new Point(0, 4));
-		// S.add(new Point(4, 0));
-		// S.add(new Point(4, 4));
-
-		/*
-		S.add(new Point(12, 32));
-		S.add(new Point(45, 98));
-		S.add(new Point(65, 12));
-		S.add(new Point(10, 30));
-		S.add(new Point(0, 80));
-		S.add(new Point(2, -20));
-		S.add(new Point(3, -30));
-		S.add(new Point(0, 0));
-		S.add(new Point(7, -45));
-		S.add(new Point(0, 0));
-		S.add(new Point(7, -10));
-		*/
-		
 		
 		// create random set of 10 points
-		for( int i = 0; i < 10; i++) {
+		for( int i = 0; i < 750000; i++) {
 	        int x = rand.nextInt(100);
 			int y = rand.nextInt(100)-50;
 	        	S.add( new Point( x, y ) );
 		}
 		
+		long startTime = System.nanoTime();
 		// create QuickHull object and find convex hull
 		QuickHull QH = new QuickHull( S );
-		System.out.println( "Convex hull: " + QH.getConvexHull() );
+		QH.getConvexHull();
+		//System.out.println( "Convex hull: " + QH.getConvexHull() );
+
+		long endTime = System.nanoTime();
+		long duration = (endTime -startTime)/1000000;
+		System.out.println("Total execution time: " + (duration) );
     }
 }

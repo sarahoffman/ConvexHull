@@ -5,21 +5,25 @@
 // Threading version
 
 
+// import statements
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.Random;
 import java.lang.Math;
-
+import java.util.ListIterator;
 
 // QuickHullThread class that extends thread
 public class QuickHullThread extends Thread {
 
+	// variable delcarations
     private ArrayList<Point> input;
     private ArrayList<Point> output;
     private ArrayList<HullThread> threads;
     private int n;
 
     public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
+
+    // private ListIterator<Point> it;
 	
 	// constructor
     public QuickHullThread( ArrayList<Point> S ){
@@ -28,6 +32,7 @@ public class QuickHullThread extends Thread {
 		this.output = new ArrayList<Point>();
 		this.n = S.size();
 		this.threads = new ArrayList<HullThread>();
+		//this.it = this.output.listIterator();
 		System.out.println( "input: " + this.input );
     }
 	
@@ -231,14 +236,17 @@ public class QuickHullThread extends Thread {
 
     // class for threads
     class HullThread extends Thread {
+    	// variable to hold list of points and line seg
         private ArrayList<Point> points;
         private Segment seg;
 
+        // constructor
         public HullThread(ArrayList<Point> pts, Segment sment) {
             this.points = pts;
             this.seg = sment;
         }
 
+        // passes points and segments to subhull
         @Override
         public void run() {
             subHull(this.points, this.seg);
@@ -248,6 +256,7 @@ public class QuickHullThread extends Thread {
 	
 	// main method
     public static void main( String args[] ) {
+    	// create ArrayList of points
 		ArrayList<Point> S = new ArrayList<Point>();
 
 		S.add(new Point(0, 0));
@@ -257,6 +266,7 @@ public class QuickHullThread extends Thread {
 		S.add(new Point(5, 5));
 		S.add(new Point(10, 0));
 		
+		// create QuickHull object and find convex hull
 		QuickHullThread QH = new QuickHullThread( S );
 		System.out.println( "Convex hull: " + QH.getConvexHull() );
     }
