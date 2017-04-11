@@ -176,7 +176,7 @@ public class StreamHull {
 		S.add(new StreamPoint(7, -10));
 		*/
 
-		for( int i = 0; i < 900000; i++) {
+		for( int i = 0; i < 100; i++) {
 		 	int x = rand.nextInt(100);
 		 	int y = rand.nextInt(100);
 		 	S.add( new StreamPoint( x, y ) );
