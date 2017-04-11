@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors; 
 import java.lang.Double; 
 
+// create a class to compute the convex hull using streams
 public class StreamHull {
 
     private ArrayList<StreamPoint> input;
@@ -14,10 +15,10 @@ public class StreamHull {
 	
     public StreamHull( ArrayList<StreamPoint> S ){
 		//creates a QuickHull object from the given ArrayList of points
-		input = S;
-		output = new ArrayList<StreamPoint>();
-		n = S.size();
-		//System.out.println( "input: " + this.input );
+		this.input = S;
+		this.output = new ArrayList<StreamPoint>();
+		this.n = S.size();
+	
     }
 
  
@@ -30,8 +31,7 @@ public class StreamHull {
 		
 		output[0] = min;
 		output[1] = max;
-		//System.out.println( "min: " + String.valueOf(min) + "	" + 
-		//"max: " + String.valueOf(max) );
+		
 
 		return output;
     }
@@ -39,13 +39,12 @@ public class StreamHull {
 	
     // Function that actually finds the convex hull
     public ArrayList<StreamPoint> getConvexHull() {
+    	// handle the case where the input contains no points
 		if( n > 0 ) {
 			StreamPoint[] result = this.getExtremes(input);
 			StreamPoint min = result[0];
 			StreamPoint max = result[1];
 
-			//System.out.println( "min: " + String.valueOf(min) + "	" + 
- 			//"max: " + String.valueOf(max) );
 		
 			Segment s = new Segment( min,max );
 		
@@ -63,9 +62,6 @@ public class StreamHull {
 			ArrayList<StreamPoint> streamright = this.input.stream().parallel()
 			    .filter(p -> !s.isLeft(p)).collect(Collectors.toCollection(ArrayList::new));
 		       
-
-
-			//System.out.println( "Contents of streamright: " + streamright );
 			// perform the recursive algorithm on the two points
 			this.subHull(streamleft,s);
 			this.subHull(streamright,s); 
@@ -73,22 +69,18 @@ public class StreamHull {
 		return this.output;
     }
 
-    // write the recursive algorithm.
+    // recursive algorithm to calculate the convex hull
     public void subHull(ArrayList<StreamPoint> a, Segment s ) {
 		// base case for recursion
 		if (a.size() < 1){
 			return; 
 		}
-		// System.out.println("Recursing with size: " + a.size()); 
-		//System.out.println( "Contents of a: " + a );
-		// System.out.println("Input size: " + this.input.size()); 
+		
 	
 		//find the point with the max perpendicular distance
 		StreamPoint maxPoint = a.stream().parallel()
 		    .max((p1,p2)->java.lang.Double.compare(this.distance(s,p1),this.distance(s,p2))).get();
 		
-	
-		//System.out.println( "max: " + String.valueOf(maxPoint) );
 
 		// add the max point to the convex hull
 		if (!this.output.contains(maxPoint)) {
@@ -141,19 +133,18 @@ public class StreamHull {
 		
     }
 	
+	// computes the distance between a point and a line 
     public double distance( Segment s, StreamPoint p ) {
 		double[] a = s.getCo();
 		double dist = Math.abs( a[0]*p.getX() + a[1]*p.getY() + a[2] )/Math.sqrt( a[0]*a[0] + a[1]*a[1] );
 		return dist;
     }
 	
+	// ***************************************** MAIN CODE ************************************************
     public static void main( String args[] ) {
 		ArrayList<StreamPoint> S = new ArrayList<StreamPoint>();
 		Random rand = new Random();
-
-
-
-		// Stream Hull is working provided that
+		// Test cases for Stream Hull
 		/*
 		S.add(new StreamPoint(0, 0));
 		S.add(new StreamPoint(1, 1));
@@ -185,24 +176,28 @@ public class StreamHull {
 		StreamHull SH = new StreamHull( S );
 		long startTime = System.nanoTime();
 		ArrayList<StreamPoint> output = SH.getConvexHull(); 
-	    	long endTime = System.nanoTime();
+	    long endTime = System.nanoTime();
 		//System.out.println( "Convex hull: " + output );
-	    	// duration time in milliseconds
-	    	long duration = (endTime - startTime)/1000000;
+	    // duration time in milliseconds
+	    long duration = (endTime - startTime)/1000000;
 		System.out.println("Duration: " + duration); 
     }
 }
 
 
+// Class stream point
+// needed to implement a comparator. 
 class StreamPoint extends Point{
 
+	// constructor for the stream point class
+	// takes in x and y coordinates
     public StreamPoint(int x,int y){
-	super(x,y); 
+		super(x,y); 
 	
     }
-
+	// compare two stream points based on their x values
     public int compare(StreamPoint o1, StreamPoint o2) {
-	return java.lang.Double.compare(o1.getX(), o2.getX());
+		return java.lang.Double.compare(o1.getX(), o2.getX());
     }
 
 
