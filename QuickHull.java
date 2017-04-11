@@ -169,7 +169,7 @@ public class QuickHull {
 		Random rand = new Random();
 		
 		// create random set of 10 points
-		for( int i = 0; i < 750000; i++) {
+		for( int i = 0; i < 75000; i++) {
 	        int x = rand.nextInt(100);
 			int y = rand.nextInt(100)-50;
 	        	S.add( new Point( x, y ) );

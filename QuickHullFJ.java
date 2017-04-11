@@ -60,8 +60,6 @@ public class QuickHullFJ extends QuickHull {
             in = a;
             seg = s;
             output = r;
-//             System.out.println( "\nSegment endpoints: " + seg.getP1() + " ' " + seg.getP2() );
-//             System.out.println( "Contents of in: " + in );
         }
 
         @Override
@@ -82,8 +80,6 @@ public class QuickHullFJ extends QuickHull {
 					}
 				}
 				
-// 				System.out.println( "maxPoint: " + maxPoint );
-
 				// add the max point to the convex hull
 				if (!output.contains(maxPoint)) {
 					output.add(maxPoint);
@@ -140,25 +136,19 @@ public class QuickHullFJ extends QuickHull {
     public static void main( String args[] )  {
     	Random rand = new Random();
     	ArrayList<Point> in = new ArrayList<Point>();
-    	for( int i = 0; i < 10; i++) {
+    	for( int i = 0; i < 75000; i++) {
 	        int x = rand.nextInt(100);
 			int y = rand.nextInt(100)-50;
 	        	in.add( new Point( x, y ) );
 		}
-
-// 		in.add( new Point( 0, 4 ) );
-// 		in.add( new Point( 0, 0 ) );
-// 		in.add( new Point( 4, 0 ) );
-// 		in.add( new Point( 4,4 ) );
-// 		in.add( new Point( 2, 2 ) );
 		
-		System.out.println( "input: " + in );
+// 		System.out.println( "input: " + in );
 		
 		QuickHullFJ qhfj = new QuickHullFJ( in );
 		long startTime = System.nanoTime();
 		ArrayList<Point> output = qhfj.findConvHull();
 		long endTime = System.nanoTime();
-		System.out.println( "\nOutput: " + output + "Size: " + output.size() );
+// 		System.out.println( "\nOutput: " + output + "Size: " + output.size() );
 		System.out.println( "\nTime: " + (endTime - startTime) / 1000000 );
     }
 }
