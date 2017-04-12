@@ -9,7 +9,7 @@ public class QuickHullFJ extends QuickHull {
 
 	private static final int threshold = 1;
 	private ArrayList<Point> input; //input ArrayList of points
-	private int numProc;
+// 	private int numProc;
 	
 	//creates a QuickHullFJ objects with the given ArrayList of Points
 	public QuickHullFJ( ArrayList<Point> in ) {
@@ -22,9 +22,10 @@ public class QuickHullFJ extends QuickHull {
 	//creates a ForkJoinPool, and uses two threads to invoke a recursive QuickHullAction
 	//on points to the left and right of the calculated line segment
 	public ArrayList<Point> findConvHull() {
-		ForkJoinPool pool = new ForkJoinPool();
 		
 		if( input.size() > 0 ) {
+			//create ForkJoinPool to handle threads
+			ForkJoinPool pool = new ForkJoinPool();
 			//find Points with the minimum and maximum x-values
 			Point[] r = getExtremes(input);
 			Point min = r[0];
