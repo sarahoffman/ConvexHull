@@ -1,3 +1,8 @@
+// Hannah Bossi, Sara Hoffman, Riley Karp
+// CS375 Project 3
+// StreamHull.java - implements QuickHull using streams
+
+
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.Random;
