@@ -3,29 +3,38 @@ import java.util.concurrent.RecursiveAction;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
+//Class that implements QuickHull using a Fork/Join Pool Framework
 public class QuickHullFJ extends QuickHull {
 
 	private static final int threshold = 1;
-	private ArrayList<Point> input;
+	private ArrayList<Point> input; //input ArrayList of points
 	private int numProc;
-	private ForkJoinPool pool;
 	
+	//creates a QuickHullFJ objects with the given ArrayList of Points
 	public QuickHullFJ( ArrayList<Point> in ) {
 		super(in);
 		input = in;
-		numProc = Runtime.getRuntime().availableProcessors();
+// 		numProc = Runtime.getRuntime().availableProcessors();
 // 		System.out.println( "Number of processors: " + numProc );
-		pool = new ForkJoinPool();
 	}
 	
+	//creates a ForkJoinPool, and uses two threads to invoke a recursive QuickHullAction
+	//on points to the left and right of the calculated line segment
 	public ArrayList<Point> findConvHull() {
+		ForkJoinPool pool = new ForkJoinPool();
+		
 		if( input.size() > 0 ) {
+			//find Points with the minimum and maximum x-values
 			Point[] r = getExtremes(input);
 			Point min = r[0];
 			Point max = r[1];
+			
+			//create a Segment between the Points with the minimum and maximum x-values
 			Segment s = new Segment( min,max );
+			
+			//add the endpoints of the new Segment to the convex hull, and remove them
+			//from the input ArrayList
 			output.add( min );
 			input.remove(min);
 			if( min != max ) {
@@ -33,9 +42,9 @@ public class QuickHullFJ extends QuickHull {
 				input.remove(max);
 			} 
 			
+			//create ArrayLists of points to the left and to the right of the Segment
 			ArrayList<Point> left = new ArrayList<Point>();
 			ArrayList<Point> right = new ArrayList<Point>(); 
-			// get a list of all of the points to the left of the line
 			for(int i = 0; i< input.size(); i++){
 				Point p = input.get(i);
 				if (s.isLeft(p) == true){
@@ -45,17 +54,27 @@ public class QuickHullFJ extends QuickHull {
 					right.add(p); 
 				}
 			}	
+			
+			//invoke a QuickHullAction on the lists of Points to the left and right of
+			//the calculated Segment
 			pool.invoke(new QuickHullAction(left, s, output));
 			pool.invoke(new QuickHullAction(right, s, output));
 		}
+		//return the ArrayList of the Points in the Convex Hull
         return output;
     }
     
+    //Class that computes the convex hull of the initial ArrayList of Points by recursively
+    //finding the Points in the input list to the left and right of the given Segment,
+    //and eventually calling the sequential QuickHull algorithm when the input list is
+    //small enough.
     class QuickHullAction extends RecursiveAction {
         private Segment seg;
         private ArrayList<Point> output;
         private ArrayList<Point> in;
 
+		//creates a QuickHullAction object with the given input and output ArrayLists of
+		//Points and the given line Segment.
         public QuickHullAction( ArrayList<Point> a, Segment s, ArrayList<Point> r) {
             in = a;
             seg = s;
@@ -63,15 +82,18 @@ public class QuickHullFJ extends QuickHull {
         }
 
         @Override
+        //recursively computes the points to the left and right of the given Segment,
+        //until the input list is small enough, so it calls the sequential version
+        //of QuickHull to finish the job.
         protected void compute() {
             if ( in.size() < threshold ) { // do it sequentially myself
             	subHull( in , seg );
             }
             else { // fork the work into two tasks for other threads
-				//loop through the arrayList to find the point with the max distance
+				//loop through the input ArrayList to find the point with the maximum 
+				//perpendicular distance from the given line Segment
 				double max = Double.MIN_VALUE;
 				Point maxPoint = in.get(0);
-				//find the point with the max perpendicular distance
 				for(int i = 0; i< in.size(); i++){
 					double dist = distance(seg, in.get(i));
 					if(dist>max){
@@ -80,10 +102,11 @@ public class QuickHullFJ extends QuickHull {
 					}
 				}
 				
-				// add the max point to the convex hull
+				//add the maxPoint to the convex hull if it's not already in the convex hull
 				if (!output.contains(maxPoint)) {
 					output.add(maxPoint);
 				}
+				//remove the maxPoint from the input ArrayList
 				in.remove(maxPoint);
 
 				//create a segment between the maxPoint and the endpoints of the given segment
@@ -93,12 +116,12 @@ public class QuickHullFJ extends QuickHull {
 				ArrayList<Point> left = new ArrayList<Point>();
 				ArrayList<Point> right = new ArrayList<Point>();
 
-				// get a list of all of the points to the left of the line
-				// we need to handle the case of the max point being negative 
-				// and the max point being positive differently
-				// this is due to our isLeft method
+				//get a list of all of the points to the left and right of the given line
+				//Segment. We need to handle the cases of when the y-coordinate of the
+				//maxPoint is negative and when it is positive, differently because of
+				//how we implemented our isLeft() method in the Segment class
 		
-				// is maxPoint is negative
+				//if y-coordinate of maxPoint is negative (below the given Segment)
 				if (seg.getP2().getY() >= maxPoint.getY()){
 					for(int i = 0; i< in.size(); i++){
 						Point p = in.get(i);
@@ -111,9 +134,8 @@ public class QuickHullFJ extends QuickHull {
 					}
 				}
 		
-				// if the maxPoint is positive
+				//if the maxPoint is positive (above the given Segment)
 				else{
-		
 					for(int i = 0; i< in.size(); i++){
 						Point p = in.get(i);
 						if (seg1.isLeft(p) == true){
@@ -123,9 +145,11 @@ public class QuickHullFJ extends QuickHull {
 							right.add(p);
 						}
 					}
-		
 				}
             
+            	//recursively create and invoke new QuickHullActions with the newly
+            	//found segments and ArrayLists of Points to the left and right of the
+            	//given line Segment
                 QuickHullAction l = new QuickHullAction(left, seg1, output);
                 QuickHullAction r = new QuickHullAction(right, seg2, output);
                 invokeAll(l, r);
@@ -133,7 +157,10 @@ public class QuickHullFJ extends QuickHull {
         }
     }
     
+    //creates an ArrayList of Points and finds the convex hull of the Points, using the
+    //QuickHullFJ class. Prints the time the algorithm took to calculate the convex hull
     public static void main( String args[] )  {
+    	//create an ArrayList of random Points
     	Random rand = new Random();
     	ArrayList<Point> in = new ArrayList<Point>();
     	for( int i = 0; i < 75000; i++) {
@@ -144,11 +171,12 @@ public class QuickHullFJ extends QuickHull {
 		
 // 		System.out.println( "input: " + in );
 		
+		//create a QuickHullFJ object to find the convex hull
 		QuickHullFJ qhfj = new QuickHullFJ( in );
 		long startTime = System.nanoTime();
 		ArrayList<Point> output = qhfj.findConvHull();
 		long endTime = System.nanoTime();
-// 		System.out.println( "\nOutput: " + output + "Size: " + output.size() );
+// 		System.out.println( "\nOutput: " + output + " Size: " + output.size() );
 		System.out.println( "\nTime: " + (endTime - startTime) / 1000000 );
     }
 }
