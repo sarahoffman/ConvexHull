@@ -10,13 +10,14 @@
 import java.util.ArrayList;
 import java.awt.Point;
 import java.lang.Math;
+import java.util.Random;
 
 
 /**
  * QuickHull class that drives the calculation process and contains HullThread class that implements the thread
  */
 
-public class QuickHullThread  /* JH extends Thread */ {
+public class QuickHullThread {
 
     // variable delcarations
     private int threadCount = 0;
@@ -24,19 +25,13 @@ public class QuickHullThread  /* JH extends Thread */ {
 
     public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
 
-    // private ListIterator<Point> it;
-
-
-    /* JH use synchronized when manipulating the thread count, so threads don't conflict by writing it at the same time.
-     * synchronized sets up a semaphore using "this" */
+    // method to have threads wait
     public synchronized int getThreadOrWait() {
 
-        // Really should be using wait() and notify()
         while (threadCount >= NUM_THREADS) {
             try {
                 this.wait();
                 // this waits until notify, which happens when thread count is decremented
-                // when wait returns, this thread owns the semaphore
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -46,24 +41,23 @@ public class QuickHullThread  /* JH extends Thread */ {
         return ++threadCount;
     }
 
+    // decrement thread count and notify waiting thread
     public synchronized int decrementThreads() {
-
         int result = --threadCount;
         this.notify(); // wake up a thread waiting to do some processing
         return result;
     }
 
 
-/*JH*/
-
     // constructor
-    public QuickHull(ArrayList<Point> S) {
+    public QuickHullThread(ArrayList<Point> S) {
         //creates a QuickHull object from the given ArrayList of points
         this.threadCount = 0;
         this.originalInput = S;
-        System.out.println("input: " + S);
+        //System.out.println("input: " + S);
     }
 
+    // getConvexHull initial call
     public ArrayList<Point> getConvexHull() {
         return new HullThread(originalInput, null).getConvexHull();
     }
@@ -76,13 +70,11 @@ public class QuickHullThread  /* JH extends Thread */ {
 
         private ArrayList<Point> output = new ArrayList<Point>();
 
-
         // constructor
         public HullThread(ArrayList<Point> pts, Segment segment) {
             this.points = pts;
             this.segment = segment;
         }
-
 
         // performs the max/min calculation
         public Point[] getExtremes(ArrayList<Point> a) {
@@ -98,7 +90,7 @@ public class QuickHullThread  /* JH extends Thread */ {
                     max = p;
                 }
             }
-//            System.out.println("min: " + String.valueOf(min) + "	" +
+//            System.out.println("min: " + String.valueOf(min) + "  " +
 //                    "max: " + String.valueOf(max));
 
             extremes[0] = (min);
@@ -107,10 +99,9 @@ public class QuickHullThread  /* JH extends Thread */ {
             return extremes;
         }
 
-
         // Function that actually finds the convex hull
         public ArrayList<Point> getConvexHull() {
-            System.out.println("Num threads:  " + QuickHull.NUM_THREADS);
+            //System.out.println("Num threads:  " + QuickHullThread.NUM_THREADS);
             if (!points.isEmpty()) {
                 Point[] result = this.getExtremes(points);
                 Point min = result[0];
@@ -126,7 +117,6 @@ public class QuickHullThread  /* JH extends Thread */ {
                     this.points.remove(max);
                 }
 
-
                 ArrayList<Point> left = new ArrayList<Point>();
                 ArrayList<Point> right = new ArrayList<Point>();
 
@@ -140,7 +130,7 @@ public class QuickHullThread  /* JH extends Thread */ {
                     }
                 }
 
-                System.out.println("before recursion: \n\tleft: " + left + "\n\tright: " + right);
+                //System.out.println("before recursion: \n\tleft: " + left + "\n\tright: " + right);
                 runThreads(left, segment, right, segment);
             }
 
@@ -169,7 +159,7 @@ public class QuickHullThread  /* JH extends Thread */ {
             }
 
             // print point with max distance
-            System.out.println("max: " + String.valueOf(maxPoint));
+            //System.out.println("max: " + String.valueOf(maxPoint));
 
             // add the max point to the convex hull
             if (!this.output.contains(maxPoint)) {
@@ -212,15 +202,16 @@ public class QuickHullThread  /* JH extends Thread */ {
 
             }
 
-            System.out.println("recurring: \n\tleft: " + left
-                    + "\n\tleftSegment: " + min2dist
-                    + "\n\tright: " + right
-                    + "\n\tright segment: " + max2dist);
+            // System.out.println("recurring: \n\tleft: " + left
+            //         + "\n\tleftSegment: " + min2dist
+            //         + "\n\tright: " + right
+            //         + "\n\tright segment: " + max2dist);
 
 
             runThreads(left, min2dist, right, max2dist);
         }
 
+        // runs all threads
         private void runThreads(ArrayList<Point> left, Segment leftSegment, ArrayList<Point> right, Segment rightSegment) {
             ArrayList<HullThread> myThreads = new ArrayList<HullThread>();
             if (left.size() > 0) {
@@ -251,7 +242,7 @@ public class QuickHullThread  /* JH extends Thread */ {
             return dist;
         }
 
-
+        // run individual thread
         public HullThread runThread(ArrayList<Point> pts, Segment segment) {
             HullThread rthread = new HullThread(pts, segment);
             getThreadOrWait();      // wait until threadcount is below NUM_THREADS
@@ -273,27 +264,34 @@ public class QuickHullThread  /* JH extends Thread */ {
     public static void main(String args[]) {
         // create ArrayList of points
         ArrayList<Point> S = new ArrayList<Point>();
+        Random rand = new Random();
 
-//        S.add(new Point(0, 0));
-//        S.add(new Point(0, 10));
-//        S.add(new Point(0, 5));
-//        S.add(new Point(5, 10));
-//        S.add(new Point(5, 5));
-//        S.add(new Point(10, 0));
 
-        S.add(new Point(0, 0));
-        S.add(new Point(0, 10));
-        S.add(new Point(0, 5));
-        S.add(new Point(5, 10));
-        S.add(new Point(5, 5));
-        S.add(new Point(10, 0));
-        S.add(new Point(2, 2));
-        S.add(new Point(5, -5));
-        S.add(new Point(4, -1));
+        // S.add(new Point(0, 0));
+        // S.add(new Point(0, 10));
+        // S.add(new Point(0, 5));
+        // S.add(new Point(5, 10));
+        // S.add(new Point(5, 5));
+        // S.add(new Point(10, 0));
+        // S.add(new Point(2, 2));
+        // S.add(new Point(5, -5));
+        // S.add(new Point(4, -1));
 
+        for( int i = 0; i < 24; i++) {
+            int x = rand.nextInt(100);
+            int y = rand.nextInt(100);
+            S.add( new Point( x, y ) );
+         }
 
         // create QuickHull object and find convex hull
-        QuickHull QH = new QuickHull(S);
-        System.out.println("Convex hull: " + QH.getConvexHull());
+        long startTime = System.nanoTime();
+
+        QuickHullThread QH = new QuickHullThread(S);
+        QH.getConvexHull();
+
+        long endTime = System.nanoTime();
+        long duration = (endTime -startTime)/1000000;
+        System.out.println("Total execution time: " + (duration) );
+        //System.out.println("Convex hull: " + QH.getConvexHull());
     }
 }
