@@ -1,8 +1,9 @@
-// Hannah Bossi, Sara Hoffman, Riley Karp
-// CS375 Project 3
-// StreamHull.java - implements QuickHull using streams
+// Sara Hoffman, Hannah Bossi, and Riley Karp
+// CS375 - Algorithms
+// 04-12-17
 
 
+// import statements
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.Random;
@@ -11,13 +12,16 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors; 
 import java.lang.Double; 
 
+
 // create a class to compute the convex hull using streams
 public class StreamHull {
 
+	// variable declarations
     private ArrayList<StreamPoint> input;
     private int n;
     private ArrayList<StreamPoint> output;
 	
+	// constructor
     public StreamHull( ArrayList<StreamPoint> S ){
 		//creates a QuickHull object from the given ArrayList of points
 		this.input = S;
@@ -26,19 +30,21 @@ public class StreamHull {
 		System.out.println(this.input); 
 	
     }
-
  
 	
     // performs the max/min calculation
     public StreamPoint[] getExtremes( ArrayList<StreamPoint> a ) {
 		StreamPoint[] output = new StreamPoint[2];
-		StreamPoint max = a.stream().parallel().max((p1,p2)->p1.compare(p1,p2)).get();
+
+		// find max and min
 		StreamPoint min = a.stream().parallel().min((p1,p2)->p1.compare(p1,p2)).get(); 
+		StreamPoint max = a.stream().parallel().max((p1,p2)->p1.compare(p1,p2)).get();
 		
+		// add min and max to output
 		output[0] = min;
 		output[1] = max;
 		
-
+		// return output
 		return output;
     }
 	
@@ -51,7 +57,7 @@ public class StreamHull {
 			StreamPoint min = result[0];
 			StreamPoint max = result[1];
 
-		
+			// create new segment from min to max
 			Segment s = new Segment( min,max );
 		
 			// extremes in x will be a part of the convex hull
@@ -72,8 +78,11 @@ public class StreamHull {
 			this.subHull(streamleft,s);
 			this.subHull(streamright,s); 
 		}
+
+		// return output
 		return this.output;
     }
+
 
     // recursive algorithm to calculate the convex hull
     public void subHull(ArrayList<StreamPoint> a, Segment s ) {
@@ -107,13 +116,13 @@ public class StreamHull {
 		    
 			
 		    for(int i = 0; i< a.size(); i++){
-			StreamPoint p = a.get(i);
-			if (max2dist.isLeft(p) == true){
-			    left.add(p);
-			} 
-			else if (min2dist.isLeft(p) == false) {
-			    right.add(p);
-			}
+				StreamPoint p = a.get(i);
+				if (max2dist.isLeft(p) == true){
+				    left.add(p);
+				} 
+				else if (min2dist.isLeft(p) == false) {
+				    right.add(p);
+				}
 		    }
 		    
 		}
@@ -122,13 +131,13 @@ public class StreamHull {
 		else{
 	      
 		    for(int i = 0; i< a.size(); i++){
-			StreamPoint p = a.get(i);
-			if (min2dist.isLeft(p) == true){
-			    left.add(p);
-			} 
-			else if (max2dist.isLeft(p) == false) {
-			    right.add(p);
-			}
+				StreamPoint p = a.get(i);
+				if (min2dist.isLeft(p) == true){
+				    left.add(p);
+				} 
+				else if (max2dist.isLeft(p) == false) {
+				    right.add(p);
+				}
 		    }
 		
 		}
@@ -137,9 +146,9 @@ public class StreamHull {
 		// call algorithm recursively
 		subHull(left, min2dist);
 		subHull(right, max2dist); 
-		
     }
 	
+
 	// computes the distance between a point and a line 
     public double distance( Segment s, StreamPoint p ) {
 		double[] a = s.getCo();
@@ -149,19 +158,10 @@ public class StreamHull {
 	
 	// ***************************************** MAIN CODE ************************************************
     public static void main( String args[] ) {
+    	// create strem for points
 		ArrayList<StreamPoint> S = new ArrayList<StreamPoint>();
-		Random rand = new Random();
-		// Test cases for Stream Hull
-		/*
-		S.add(new StreamPoint(0, 0));
-		S.add(new StreamPoint(1, 1));
-		S.add(new StreamPoint(2, 2));
-		S.add(new StreamPoint(0, 4));
-		S.add(new StreamPoint(4, 0));
-		S.add(new StreamPoint(4, 4));
-		*/
-		
-		
+
+		// add points to array
 		S.add(new StreamPoint(12, 32));
 		S.add(new StreamPoint(-45, 98));
 		S.add(new StreamPoint(65, 12));
@@ -174,15 +174,7 @@ public class StreamHull {
 		S.add(new StreamPoint(0, 0));
 		S.add(new StreamPoint(7, -10));
 		
-		
-		// Data configuration used for timing
-        /*
-		for( int i = 0; i < 10; i++) {
-		 	int x = rand.nextInt(100)-50;
-		 	int y = rand.nextInt(100)-50;
-		 	S.add( new StreamPoint( x, y ) );
-		 }
-		*/
+		// create stream and time it
 		StreamHull SH = new StreamHull( S );
 		long startTime = System.nanoTime();
 		ArrayList<StreamPoint> output = SH.getConvexHull(); 
@@ -209,6 +201,7 @@ class StreamPoint extends Point{
     public int compare(StreamPoint o1, StreamPoint o2) {
 		return java.lang.Double.compare(o1.getX(), o2.getX());
     }
-
-
 }
+
+
+// end of StreamHull.java
