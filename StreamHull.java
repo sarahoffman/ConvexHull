@@ -18,6 +18,7 @@ public class StreamHull {
 		this.input = S;
 		this.output = new ArrayList<StreamPoint>();
 		this.n = S.size();
+		System.out.println(this.input); 
 	
     }
 
@@ -81,6 +82,7 @@ public class StreamHull {
 		StreamPoint maxPoint = a.stream().parallel()
 		    .max((p1,p2)->java.lang.Double.compare(this.distance(s,p1),this.distance(s,p2))).get();
 		
+		System.out.println("max is: " + maxPoint);
 
 		// add the max point to the convex hull
 		if (!this.output.contains(maxPoint)) {
@@ -153,31 +155,34 @@ public class StreamHull {
 		S.add(new StreamPoint(4, 0));
 		S.add(new StreamPoint(4, 4));
 		*/
-		/*
+		
+		
 		S.add(new StreamPoint(12, 32));
-		S.add(new StreamPoint(45, 98));
+		S.add(new StreamPoint(-45, 98));
 		S.add(new StreamPoint(65, 12));
 		S.add(new StreamPoint(10, 30));
 		S.add(new StreamPoint(0, 80));
 		S.add(new StreamPoint(1, -40));
-		S.add(new StreamPoint(3, -30));
+		S.add(new StreamPoint(-3, -10));
 		S.add(new StreamPoint(0, 0));
 		S.add(new StreamPoint(7, -45));
 		S.add(new StreamPoint(0, 0));
 		S.add(new StreamPoint(7, -10));
-		*/
-
-		for( int i = 0; i < 100; i++) {
-		 	int x = rand.nextInt(100);
-		 	int y = rand.nextInt(100);
+		
+		
+		// Data configuration used for timing
+        /*
+		for( int i = 0; i < 10; i++) {
+		 	int x = rand.nextInt(100)-50;
+		 	int y = rand.nextInt(100)-50;
 		 	S.add( new StreamPoint( x, y ) );
 		 }
-	
+		*/
 		StreamHull SH = new StreamHull( S );
 		long startTime = System.nanoTime();
 		ArrayList<StreamPoint> output = SH.getConvexHull(); 
 	    long endTime = System.nanoTime();
-		//System.out.println( "Convex hull: " + output );
+		System.out.println( "Convex hull: " + output );
 	    // duration time in milliseconds
 	    long duration = (endTime - startTime)/1000000;
 		System.out.println("Duration: " + duration); 
