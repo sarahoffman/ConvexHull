@@ -7,7 +7,7 @@ public class QuickHull {
 
     private ArrayList<Point> input;
     private int n;
-    private ArrayList<Point> output;
+    protected ArrayList<Point> output;
 	
     public QuickHull( ArrayList<Point> S ){
 		//creates a QuickHull object from the given ArrayList of points
