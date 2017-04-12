@@ -150,7 +150,7 @@ public class QuickHullFJ extends QuickHull {
             
             	//recursively create and invoke new QuickHullActions with the newly
             	//found segments and ArrayLists of Points to the left and right of the
-            	//given line Segment
+            	//two new line Segments
                 QuickHullAction l = new QuickHullAction(left, seg1, output);
                 QuickHullAction r = new QuickHullAction(right, seg2, output);
                 invokeAll(l, r);
