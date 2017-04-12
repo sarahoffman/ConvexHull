@@ -1,6 +1,6 @@
 // Sara Hoffman, Hannah Bossi, and Riley Karp
 // CS375 - Algorithms
-// 04-10-17
+// 04-12-17
 
 
 // import statements
@@ -22,7 +22,6 @@ public class ConvexHull {
 		//creates a QuickHull object from the given ArrayList of points
 		this.input = S;
 		this.output = new ArrayList<Point>();
-		System.out.println( "input: " + this.input );
     }
 	
     // performs the max/min calculation
@@ -56,7 +55,6 @@ public class ConvexHull {
 
 		// if there are no points on one side
 		if (left.size() == 0 || right.size() == 0) {
-    		System.out.println("Adding p2 to output: "+p2);
 			this.output.add(p2);
 			this.input.remove(p2);
 			return true;
@@ -68,33 +66,37 @@ public class ConvexHull {
 
     // Function that actually finds the convex hull
     public ArrayList<Point> getConvexHull() {
+    	// find minimum and add to output
     	Point min = this.getMin(input);
-    	System.out.println("Min: "+min);
 		this.input.remove(min);
 		this.output.add(min);
 		while (this.input.size() > 0) {
 			int i = 0;
 			int index = 0;
+			// find a point that connects to the min
+			// set found point as new min to repeat
 			while (i < 1 && index < this.input.size()) {
 				Point p2 = this.input.get(index);
-    			System.out.println("Comparing min and P2: "+min+", "+p2);
 				Segment s = new Segment( min, p2 );
 				boolean found = this.isExtreme(s, p2);
 				if (found == true) {
 					i = i + 1;
 					min = p2;
-    				System.out.println("New min: "+min);
 				}	
 				index = index + 1;
 			}
 		}
+
+		// return output
 		return this.output;
     }
 
 	// main method
     public static void main( String args[] ) {
+    	// array list to hold points
 		ArrayList<Point> S = new ArrayList<Point>();
 
+		// add points to list
 		S.add(new Point(0, 0));
 		S.add(new Point(0, 10));
 		S.add(new Point(0, 5));
@@ -103,11 +105,11 @@ public class ConvexHull {
 		S.add(new Point(10, 0));
 		S.add(new Point(2, 2));
 		
+		// timer
 		long startTime = System.nanoTime();
 		// create QuickHull object and find convex hull
 		ConvexHull CH = new ConvexHull( S );
-		System.out.println( "Convex hull: " + CH.getConvexHull() );
-
+		CH.getConvexHull();
 		long endTime = System.nanoTime();
 		long duration = (endTime -startTime)/1000000;
 		System.out.println("Total execution time: " + (duration) );
