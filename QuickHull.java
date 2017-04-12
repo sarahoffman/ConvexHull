@@ -33,8 +33,7 @@ public class QuickHull {
 		}
 		output[0] = min;
 		output[1] = max;
-		System.out.println( "min: " + String.valueOf(min) + "	" + 
-			"max: " + String.valueOf(max) );
+	
 
 		return output;
     }
@@ -47,8 +46,7 @@ public class QuickHull {
 			Point min = result[0];
 			Point max = result[1];
 
-// 			System.out.println( "min: " + String.valueOf(min) + "	" + 
-// 			"max: " + String.valueOf(max) );
+
 		
 			Segment s = new Segment( min,max );
 		
@@ -86,9 +84,7 @@ public class QuickHull {
 		if (a.size() < 1){
 			return; 
 		}
-		// System.out.println("Recursing with size: " + a.size()); 
-		System.out.println( "Contents of a: " + a );
-		// System.out.println("Input size: " + this.input.size()); 
+		
 	
 		//loop through the arrayList to find the point with the max distance
 		double max = Double.MIN_VALUE;
@@ -103,7 +99,7 @@ public class QuickHull {
 			}
 		}
 
-		System.out.println( "max: " + String.valueOf(maxPoint) );
+		
 
 		// add the max point to the convex hull
 		if (!this.output.contains(maxPoint)) {
@@ -119,11 +115,11 @@ public class QuickHull {
 		ArrayList<Point> right = new ArrayList<Point>();
 
 		// get a list of all of the points to the left of the line
-		// we need to handle the case of the max point being negative 
-		// and the max point being positive differently
+		// we need to handle the case of the max point being below the segment 
+		// and the max point being above the segment differently
 		// this is due to our isLeft method
 		
-		// is maxPoint is negative
+		// is maxPoint is below segment
 		if (s.getP1().getY() >= maxPoint.getY() || s.getP2().getY() >= maxPoint.getY()){
 			for(int i = 0; i< a.size(); i++){
 				Point p = a.get(i);
@@ -136,7 +132,7 @@ public class QuickHull {
 			}
 		}
 		
-		// if the maxPoint is positive
+		// if the maxPoint is above segment
 		else{
 		
 			for(int i = 0; i< a.size(); i++){
@@ -172,7 +168,7 @@ public class QuickHull {
 		// S.add(new Point(4, 0));
 		// S.add(new Point(4, 4));
 
-		/*
+		
 		S.add(new Point(12, 32));
 		S.add(new Point(45, 98));
 		S.add(new Point(65, 12));
@@ -184,14 +180,15 @@ public class QuickHull {
 		S.add(new Point(7, -45));
 		S.add(new Point(0, 0));
 		S.add(new Point(7, -10));
-		*/
 		
 		
-		for( int i = 0; i < 10; i++) {
+		/*
+		for( int i = 0; i < 1000; i++) {
 	        int x = rand.nextInt(100);
 			int y = rand.nextInt(100)-50;
 	        	S.add( new Point( x, y ) );
 		}
+		*/
 		
 		
 		
